@@ -4,7 +4,7 @@ module PrimRecTests where
 
 import Test.QuickCheck
 import Test.QuickCheck.All
-import Vect
+import DepTypes
 import PrimRec
 
 prop_prId_correct (NonNegative x) =
@@ -42,11 +42,12 @@ prop_prMax_correct (NonNegative x, NonNegative y) =
 prop_prSymmDiff_correct (NonNegative x, NonNegative y) =
     interp prSymmDiff (mkVect2 x y) == abs (x-y)
 
-prop_prBit_correct (NonNegative x) =
-    interp prBit (mkVect1 x) == if x == 0 then 0 else 1
+-- boundary at 0 to 1 most important, so test against [0..100], not general
+prop_prBit_smallNumbers =
+    [interp prBit (mkVect1 x) | x <- [0..100]] == 0 : replicate 100 1
 
-prop_prNegBit_correct (NonNegative x) =
-    interp prNegBit (mkVect1 x) == if x == 0 then 1 else 0
+prop_prNegBit_smallNumbers =
+    [interp prNegBit (mkVect1 x) | x <- [0..100]] == 1 : replicate 100 0
 
-
+ 
 runTests = $quickCheckAll
